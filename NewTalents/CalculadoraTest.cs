@@ -4,11 +4,15 @@ namespace NewTalents;
 
 public class CalculadoraTest
 {
+    public Calculadora construirClasse()
+    {
+        return new Calculadora(0, DateTime.UtcNow);
+    }
     private void TestCurrentValue()
     {
         //Arrange
         int value = 0;
-        Calculadora calculadora = new(value);
+        Calculadora calculadora = new(value, DateTime.UtcNow);
 
         //Act
         int testValue = calculadora.CurrentValue;
@@ -24,7 +28,7 @@ public class CalculadoraTest
     public void TestSomarDoisNumeros(int val1, int val2, int resultadoEsperado)
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
 
         //Act
         int resultado = calculadora.Somar(val1, val2);
@@ -35,12 +39,12 @@ public class CalculadoraTest
 
     [Theory]
     [InlineData(3, 2, 1)]
-    [InlineData(5, -9, -4)]
+    [InlineData(5, -9, 14)]
     [InlineData(151, 15, 136)]
     public void TestSubtrairDoisNumeros(int val1, int val2, int resultadoEsperado)
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
 
         //Act
         int resultado = calculadora.Subtrair(val1, val2);
@@ -56,7 +60,7 @@ public class CalculadoraTest
     public void TestMultiplicarDoisNumeros(int val1, int val2, int resultadoEsperado)
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
 
         //Act
         int resultado = calculadora.Multiplicar(val1, val2);
@@ -72,7 +76,7 @@ public class CalculadoraTest
     public void TestDividirDoisNumeros(int val1, int val2, int resultadoEsperado)
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
 
         //Act
         int resultado = calculadora.Dividir(val1, val2);
@@ -85,7 +89,7 @@ public class CalculadoraTest
     public void TestDivisaoPorZero()
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
         int val1 = 15, val2 = 0;
 
         //Act
@@ -97,21 +101,40 @@ public class CalculadoraTest
     }
 
     [Fact]
-    public void TestHistorico()
+    public void TestHistoricoCheio()
     {
         //Arrange
-        Calculadora calculadora = new();
+        Calculadora calculadora = construirClasse();
 
         //Act
         calculadora.Somar(1, 2);
-        calculadora.Somar(5, 8);
-        calculadora.Multiplicar(3, 16);
-        calculadora.Subtrair(15, 21);
-        var lista = calculadora.Historico();
+        int resultado1 = calculadora.Somar(5, 8);
+        int resultado2 = calculadora.Multiplicar(3, 16);
+        int resultado3 = calculadora.Subtrair(15, 21);
+        var fila = calculadora.RetornaHistorico();
         var tamanhoEsperadoLista = 3;
 
         //Asset
-        Assert.Empty(lista);
-        Assert.Equal(tamanhoEsperadoLista, lista.Count);
+        Assert.NotEmpty(fila);
+        Assert.Equal(tamanhoEsperadoLista, fila.Count);
+        Assert.Equal(fila.ToList(), [resultado1, resultado2, resultado3]);
+    }
+
+    [Fact]
+    public void TestHistoricoDois()
+    {
+        //Arrange
+        Calculadora calculadora = construirClasse();
+
+        //Act
+        int resultado1 = calculadora.Somar(1, 2);
+        int resultado2 = calculadora.Multiplicar(3, 16);
+        var fila = calculadora.RetornaHistorico();
+        var tamanhoEsperadoLista = 2;
+
+        //Asset
+        Assert.NotEmpty(fila);
+        Assert.Equal(tamanhoEsperadoLista, fila.Count);
+        Assert.Equal(fila.ToList(), [resultado1, resultado2]);
     }
 }
